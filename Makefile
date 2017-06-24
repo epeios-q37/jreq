@@ -36,9 +36,9 @@ mods += que sdr stkbse stkbch stkctn
 mods += str strng tagsbs tol txf 
 mods += tys uys utf xtf llio 
 mods += bomhdl cdgb64 dlbrry fil fnm 
-mods += jniq jrebse lcl plgn plgncore 
-mods += rgstry stsfsm tht thtsub xml 
-mods += xpp 
+mods += jniq jre jrebse lcl plgn 
+mods += plgncore rgstry stsfsm tht thtsub 
+mods += xml xpp 
 mods += sclargmnt sclmisc sclerror scllocale sclrgstry 
 
 pmods += pllio 
@@ -249,7 +249,6 @@ ifeq ("$(os)", "$(MinGW)")
 
 	binary=$(name).dll
 	lo += -Wl,--kill-at -shared
-	src += :"$(jdk)/include/win32"
 
 	dest=/h/bin/
 endif
@@ -342,7 +341,6 @@ ifeq ("$(os)","$(MacOS)")
 	endif
 	binary=lib$(name).dylib
 	lo += -dynamiclib
-	src += :"$(jdk)/include/darwin"
 
 	dest=/Users/csimon/bin/
 endif
