@@ -1,0 +1,22 @@
+matrix:
+  include: 
+    - os: linux
+      dist: trusty
+      compiler: g++
+    - os: linux
+      dist: trusty
+      compiler: g++
+      jdk: openjdk7
+    - os: linux
+      compiler: clang++
+      dist: trusty
+# Probably due to 'language' setting below, despite above line, the 'CXX' environment have to be set .
+      env: CXX=clang++
+    - os: osx
+      compiler: clang++  
+
+language: java
+
+script:
+- make -j
+- java -Djava.library.path=. JREqDemo

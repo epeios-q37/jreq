@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>VERSION="20170624";COPYRIGHT_YEARS="2017";IDENTIFIER="0e753747-7f36-406d-b139-71c71f8fb9b0";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>
