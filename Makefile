@@ -36,8 +36,9 @@ mods += que sdr stkbse stkbch stkctn
 mods += str strng tagsbs tol txf 
 mods += tys uys utf xtf llio 
 mods += bomhdl cdgb64 dlbrry fil fnm 
-mods += jniq jrebse lcl plgn rgstry 
-mods += stsfsm tht thtsub xml xpp 
+mods += jniq jrebse lcl plgn plgncore 
+mods += rgstry stsfsm tht thtsub xml 
+mods += xpp 
 mods += sclargmnt sclmisc sclerror scllocale sclrgstry 
 
 pmods += pllio 
@@ -203,6 +204,9 @@ ifeq ("$(os)","$(Cygwin)")
 			endif
 		endif
     
+	else
+		$(error JAVA component does compile with genuine 'Cygwin' compiler, but does NOT work properly due to a JVM and/or a 'Cygwin' bug. You have to use the 'MinGW' compiler')
+      
 	endif
 	
 	ifneq ("$(target)","$(Android)")
@@ -210,6 +214,7 @@ ifeq ("$(os)","$(Cygwin)")
 		lo += -Wl,--kill-at -shared
 	endif
 
+	src += :"$(jdk)/include/win32"
 
 	dest=/cygdrive/h/bin/
 
@@ -223,7 +228,8 @@ endif
 #########################
 
 ifeq ("$(os)", "$(MinGW)")
- 
+ 	src += :"$(jdk)include":"$(jdk)include/win32"
+
 	co += -DMSYS -std=gnu++11 -DUNICODE
 	lo += -municode
 	
@@ -243,6 +249,7 @@ ifeq ("$(os)", "$(MinGW)")
 
 	binary=$(name).dll
 	lo += -Wl,--kill-at -shared
+	src += :"$(jdk)/include/win32"
 
 	dest=/h/bin/
 endif
@@ -255,7 +262,8 @@ endif
 #############################
 
 ifeq ("$(os)","$(GNULinux)")
- 
+ 	src += :"$(jdk)include":"$(jdk)include/linux"
+
 	co += -std=gnu++11 -DUNICODE -D_FILE_OFFSET_BITS=64
 	
 	mods += $(pmods)
@@ -286,7 +294,8 @@ endif
 #########################
 
 ifeq ("$(os)","$(Linux)")
- 
+ 	src += :"$(jdk)include":"$(jdk)include/linux"
+
 	co += -std=gnu++11 -DUNICODE -D_FILE_OFFSET_BITS=64
 	
 	mods += $(pmods)
@@ -315,7 +324,9 @@ endif
 ##########################
 
 ifeq ("$(os)","$(MacOS)")
- 
+ 	jdk=$(shell /usr/libexec/java_home)/
+	src += :"$(jdk)include":"$(jdk)include/darwin"
+
 	co += -std=gnu++11 -DUNICODE -D_FILE_OFFSET_BITS=64
 	
 	mods += $(pmods)
@@ -331,6 +342,7 @@ ifeq ("$(os)","$(MacOS)")
 	endif
 	binary=lib$(name).dylib
 	lo += -dynamiclib
+	src += :"$(jdk)/include/darwin"
 
 	dest=/Users/csimon/bin/
 endif
@@ -338,7 +350,7 @@ endif
 ##########################
 		
 all: $(binary)
-
+	javac src/*.java -d .
 	rm -rf *.o
 ifeq ("$(target)","$(Android)")
 	rm -rf *.d
