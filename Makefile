@@ -204,9 +204,6 @@ ifeq ("$(os)","$(Cygwin)")
 			endif
 		endif
     
-	else
-		$(error JAVA component does compile with genuine 'Cygwin' compiler, but does NOT work properly due to a JVM and/or a 'Cygwin' bug. You have to use the 'MinGW' compiler')
-      
 	endif
 	
 	ifneq ("$(target)","$(Android)")
@@ -214,7 +211,6 @@ ifeq ("$(os)","$(Cygwin)")
 		lo += -Wl,--kill-at -shared
 	endif
 
-	src += :"$(jdk)/include/win32"
 
 	dest=/cygdrive/h/bin/
 
