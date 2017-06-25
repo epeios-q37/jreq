@@ -21,11 +21,6 @@ os :
 - Visual Studio 2013
 
 test_script:
-- set oddity=
-- if "%platform%"=="x86" set oddity= (x86)
-- set JDK="Program Files%oddity%/Java/jdk%jdk_ver%/bin/"
-- echo %JDK%
-- C:/%JDK%javac src/*.java -d .
 - C:/%JDK%java JREqTest
 # - java -Djava.library.path=x64/Release JREqTest
 
@@ -36,6 +31,11 @@ test_script:
 skip_tags: true
 
 after_build:
+- set oddity=
+- if "%platform%"=="x86" set oddity= (x86)
+- set JDK="Program Files%oddity%/Java/jdk%jdk_ver%/bin/"
+- echo %JDK%
+- C:/%JDK%javac src/*.java -d .
 - mkdir %dir% || exit 1
 - cp %affix%.%ext% %dir%\%affix%.%ext% || exit 1
 - cp *.class %dir%\ || exit 1
