@@ -3,7 +3,7 @@ environment:
   affix: jreq
   ext: dll
   dir: $(affix)-v$(version)
-  zip: $(affix)jre-v$(version)-win-v$(jdk_ver)-$(platform).zip
+  zip: $(affix)-v$(version)-win-v$(jdk_ver)-$(platform).zip
   matrix:
     - jdk_ver: "1.8.0"
     - jdk_ver: "1.7.0"
