@@ -17,8 +17,8 @@ configuration: Release
 
 os :
 - Visual Studio 2017
-# - Visual Studio 2015
-# - Visual Studio 2013
+- Visual Studio 2015
+- Visual Studio 2013
 
 test_script:
 - set oddity=
@@ -26,8 +26,8 @@ test_script:
 - set JDK="Program Files%oddity%/Java/jdk%jdk_ver%/bin/"
 - echo %JDK%
 - C:/%JDK%javac src/*.java -d .
-- C:/%JDK%java JREqDemo
-# - java -Djava.library.path=x64/Release JREqDemo
+- C:/%JDK%java JREqTest
+# - java -Djava.library.path=x64/Release JREqTest
 
 # matrix:
   # allow_failures:
@@ -37,7 +37,7 @@ skip_tags: true
 
 after_build:
 - mkdir %dir% || exit 1
-- cp %affix%.%ext% %dir%\%affix%.%ext% || exit 1
+- cp %affix%.%ext% *.class %dir%\%affix%.%ext% || exit 1
 - 7z a %zip% %dir%
 
 artifacts:
@@ -53,8 +53,4 @@ deploy:
   prerelease: false
   on:
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-#    platform: Win32
-
-#  on:
-#    branch: master                 # release from master branch only
-#    appveyor_repo_tag: true        # deploy on tag push only
+	

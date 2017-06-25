@@ -43,17 +43,16 @@ class JREq {
 	}
 }
 
-class JREqDemo {
+class JREqTest {
 	private static void displayCompilationTime() throws Exception
 	{
-		System.out.println( new java.util.Date(new java.io.File(JREqDemo.class.getClassLoader().getResource(JREqDemo.class.getCanonicalName().replace('.', '/') + ".class").toURI()).lastModified()) );
+		System.out.println( "Java build: " + new java.util.Date(new java.io.File(JREqTest.class.getClassLoader().getResource(JREqTest.class.getCanonicalName().replace('.', '/') + ".class").toURI()).lastModified()) );
 	}
 	
 	public static void main ( String[] args ) throws Exception
 	{
+		displayCompilationTime();
 		System.out.println( JREq.wrapperInfo() );
-		System.out.println();
-		// displayCompilationTime();
 	}
 }
 
