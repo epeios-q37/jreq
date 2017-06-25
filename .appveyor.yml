@@ -2,8 +2,8 @@ environment:
   version: 20170624
   affix: jreq
   ext: dll
-  dir: $(affix)-v$(version)
-  zip: $(affix)-v$(version)-win-v$(jdk_ver)-$(platform).zip
+  dir: $(affix)-v$(version)-$(platform)
+  zip: $(affix)-v$(version)-win-java-v$(jdk_ver)-$(platform).zip
   matrix:
     - jdk_ver: "1.8.0"
     - jdk_ver: "1.7.0"
@@ -37,7 +37,7 @@ skip_tags: true
 
 after_build:
 - mkdir %dir% || exit 1
-- cp %affix%.%ext% %dir%\%affix%_%platform%.%ext% || exit 1
+- cp %affix%.%ext% %dir%\%affix%.%ext% || exit 1
 - 7z a %zip% %dir%
 
 artifacts:
