@@ -21,7 +21,9 @@ os :
 - Visual Studio 2013
 
 test_script:
+- echo "***** 'JREq' TEST BEGIN *****"
 - C:/%JDK%java JREqTest
+- echo "***** 'JREq' TEST END *****"
 # - java -Djava.library.path=x64/Release JREqTest
 
 # matrix:
