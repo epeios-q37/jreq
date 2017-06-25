@@ -37,7 +37,8 @@ skip_tags: true
 
 after_build:
 - mkdir %dir% || exit 1
-- cp %affix%.%ext% *.class %dir%\%affix%.%ext% || exit 1
+- cp %affix%.%ext% %dir%\%affix%.%ext% || exit 1
+- cp *.class %dir%\ || exit 1
 - 7z a %zip% %dir%
 
 artifacts:
