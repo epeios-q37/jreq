@@ -1,5 +1,5 @@
 environment:
-  version: 20170624
+  version: 20170627
   affix: jreq
   ext: dll
   dir: $(affix)-v$(version)-$(platform)
@@ -21,9 +21,9 @@ os :
 - Visual Studio 2013
 
 test_script:
-- echo "***** 'JREq' TEST BEGIN *****"
+- echo "\t\t\t\t***** 'JREq' TEST BEGIN *****"
 - C:/%JDK%java JREqTest
-- echo "***** 'JREq' TEST END *****"
+- echo "\t\t\t\t***** 'JREq' TEST END *****"
 # - java -Djava.library.path=x64/Release JREqTest
 
 # matrix:
