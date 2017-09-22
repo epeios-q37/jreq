@@ -17,23 +17,22 @@
 	along with JREq. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "jre.h"
+#include "jreq.h"
 
+#include "registry.h"
+#include "wrapper.h"
+
+#include "jrebse.h"
+#include "n4jre.h"
+
+#include "sclargmnt.h"
 #include "sclmisc.h"
 
 #include "iof.h"
 #include "xpp.h"
 #include "lcl.h"
 
-# define NAME_MC			"JREQ"
-# define NAME_LC			"jreq"
-# define NAME_UC			"JREq"
-# define WEBSITE_URL		"http://q37.info/"
-# define AUTHOR_NAME		"Claude SIMON"
-# define AUTHOR_CONTACT		"http://q37.info/contact/"
-# define OWNER_NAME			"Claude SIMON"
-# define OWNER_CONTACT		"http://q37.info/contact/"
-# define COPYRIGHT			COPYRIGHT_YEARS " " OWNER_NAME " (" OWNER_CONTACT ")"
+#define MDEF( name ) qCDEF( char *, name, #name );
 
 namespace {
 	namespace{
@@ -76,7 +75,7 @@ namespace {
 
 extern "C" JNIEXPORT jstring JNICALL Java_JREq_wrapperInfo(
 	JNIEnv *Env,
-	jclass)
+	jclass )
 {
 	return GetInfo_( Env );
 }
@@ -89,39 +88,121 @@ namespace {
 
 	void ERRFinal_( JNIEnv *Env )
 	{
-		err::buffer__ Buffer;
+	qRH
+		str::wString Message;
+		err::buffer__ RBuffer;
+		qCBUFFERr CBuffer;
+	qRB
+		Message.Init();
 
-		const char *Message = err::Message( Buffer );
+		if ( ERRType != err::t_Abort ) {
+			Message.Append( err::Message( RBuffer ) );
 
-		ERRRst();	// To avoid relaunching of current error by objects of the 'FLW' library.
+			ERRRst();	// To avoid relaunching of current error by objects of the 'FLW' library.
+		} else if ( sclerror::IsErrorPending() )
+			sclmisc::GetSCLBasePendingErrorTranslation( Message );
 
-		Env->ThrowNew( Env->FindClass( "java/lang/Exception" ), Message );
+		Env->ThrowNew( Env->FindClass( "java/lang/Exception" ), Message.Convert( CBuffer ) );
+	qRR
+		ERRRst();
+	qRT
+	qRE
 	}
 }
 
-extern "C" JNIEXPORT void JNICALL Java_JREq_register(
+extern "C" JNIEXPORT jstring JNICALL Java_JREq_componentInfo(
 	JNIEnv *Env,
-	jclass)
+	jclass )
+{
+	jstring JString;
+qRFH
+	str::wString Info;
+	qCBUFFERr Buffer;
+qRFB
+	Info.Init();
+
+	if ( !wrapper::GetLauncherInfo( Info ) )
+		sclmisc::GetBaseTranslation( "NoRegisteredComponent", Info );
+
+	JString = Env->NewStringUTF( Info.Convert( Buffer ) );
+qRFR
+qRFT
+qRFE( ERRFinal_( Env ) )
+	return JString;
+}
+
+extern "C" JNIEXPORT void JNICALL Java_JREq_init(
+	JNIEnv *Env,
+	jclass,
+	jstring RawLocation )
 {
 qRFH
 	str::wString Location;
 qRFB
-//	sRegistrar Registrar;
-
 	cio::Initialize( cio::GetConsoleSet() );
 	Rack_.Init( Error_, SCLError_, cio::GetSet( cio::t_Default ), Locale_ );
 
 	Location.Init();
+	jniq::Convert( RawLocation, Location, Env);
 	// TODO : Find a way to fill 'Location' with the path of the binary.
 
-	sclmisc::Initialize( Rack_, Location, qRPU );
-
-//	Registrar.Init();
-
-//	Functions_.Init();
-//	scljre::SCLJRERegister( Registrar );
+	sclmisc::Initialize( Rack_, Location );
 
 	jniq::SetGlobalEnv( Env );
+qRFR
+qRFT
+qRFE( ERRFinal_( Env ) )
+}
+
+namespace {
+	n4jre::gShared Shared_;
+}
+
+n4jre::fMalloc n4jre::N4JREMalloc = malloc;
+n4jre::fFree n4jre::N4JREFree = free;
+
+namespace {
+	inline void Delete_( n4jre::cObject *Object )
+	{
+		delete Object;
+	}
+
+	inline void Throw_( const char *Message )
+	{
+		JNIEnv *Env = jniq::GetEnv();
+
+		if ( Env->ExceptionOccurred() == NULL )
+			Env->ThrowNew( Env->FindClass( "java/lang/Exception"), Message );
+
+//		qRAbort();
+	}
+}
+
+
+extern "C" JNIEXPORT void JNICALL Java_JREq_register(
+	JNIEnv *Env,
+	jclass,
+	jstring RawArguments )
+{
+qRFH
+	str::wString Arguments;
+	str::wString ComponentFilename;
+qRFB
+	Arguments.Init();
+	jniq::Convert( RawArguments, Arguments, Env );
+
+	sclargmnt::FillRegistry( Arguments, sclargmnt::faIsArgument, sclargmnt::uaReport );
+
+	ComponentFilename.Init();
+	sclmisc::MGetValue( registry::parameter::ComponentFilename, ComponentFilename );
+
+	Shared_.New_Object = wrapper::NewObject;
+	Shared_.Delete = Delete_;
+	Shared_.Malloc = n4jre::N4JREMalloc;
+	Shared_.Free = n4jre::N4JREFree;
+	Shared_.Throw = Throw_;
+
+	wrapper::Register( ComponentFilename, Rack_, &Shared_ );
 qRFR
 qRFT
 qRFE( ERRFinal_( Env ) )
@@ -133,10 +214,15 @@ extern "C" JNIEXPORT jobject JNICALL Java_JREq_wrapper(
 	jint Index,
 	jobjectArray Args )
 {
-//	return scljre::Launch_( Env, Index, Args );
-	return NULL;
+	jobject Return = NULL;
+qRFH
+qRFB
+	Return = wrapper::Launch( Index, Args );
+qRFR
+qRFT
+qRFE( ERRFinal_( Env ) )
+	return Return;
 }
-
 
 const char *sclmisc::SCLMISCTargetName = NAME_LC;
 const char *sclmisc::SCLMISCProductName = NAME_MC;
@@ -147,4 +233,4 @@ qGCTOR( jreq )
 	Error_.Init();
 	SCLError_.Init();
 	Locale_.Init();
-}
+};

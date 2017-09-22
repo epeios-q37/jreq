@@ -152,6 +152,17 @@ namespace flw {
 		{
 			return _D();
 		}
+		tht::sTID Take( tht::sTID Owner = tht::Undefined )
+		{
+			if ( Owner == tht::Undefined )
+				Owner = tht::GetTID();
+
+			return _D().ITake( Owner );
+		}
+		tht::sTID Owner( void ) const
+		{
+			return _D().Owner();
+		}
 		bso::bool__ IsCacheEmpty( bso::size__ *Available = NULL ) const
 		{
 			return _D().IsCacheEmpty( Available );
@@ -183,7 +194,7 @@ namespace flw {
 		}
 		byte__ View( void )
 		{
-			byte__ C;
+			byte__ C = 0;
 
 			if ( View( 1, &C ) != 1 )
 				qRFwk();
@@ -192,7 +203,7 @@ namespace flw {
 		}
 		byte__ Get( void )
 		{
-			byte__ C;
+			byte__ C = 0;
 
 			if ( _D().Read( 1, &C, fdr::bBlocking ) != 1 )
 				qRFwk();
@@ -450,6 +461,17 @@ namespace flw {
 
 			Written_ = 0;
 		}
+		tht::sTID Take( tht::sTID Owner = tht::Undefined )
+		{
+			if ( Owner == tht::Undefined )
+				Owner = tht::GetTID();
+			
+			return _D().OTake( tht::GetTID() );
+		}
+		tht::sTID Owner( void ) const
+		{
+			return _D().Owner();
+		}
 		fdr::oflow_driver_base___ &ODriver( void ) const
 		{
 			return _D();
@@ -603,6 +625,17 @@ namespace flw {
 		{
 			iflow__::Init( Driver );
 			oflow__::Init( Driver, Cache, Size );
+		}
+		tht::sTID Take( tht::sTID Owner = tht::Undefined )
+		{
+			if ( Owner == tht::Undefined )
+				Owner = tht::GetTID();
+			
+			return tol::Same( iflow__::Take( Owner ), oflow__::Take( Owner ) );
+		}
+		tht::sTID Owner( void ) const
+		{
+			return tol::Same( iflow__::Owner(), oflow__::Owner() );
 		}
 	};
 

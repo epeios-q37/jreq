@@ -17,9 +17,9 @@
 	along with the Epeios framework.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#define JRE_COMPILATION_
+#define N4ALL_COMPILATION_
 
-#include "jre.h"
+#include "n4all.h"
 
-using namespace jre;
+using namespace n4all;
 

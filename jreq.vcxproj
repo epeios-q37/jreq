@@ -21,7 +21,7 @@
   <Import Project="Windows.targets"/>
   <Import Project="Details.props"/>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>c752d7db-78a7-42d8-bbe3-f2d3892ab630</ProjectGuid>
+    <ProjectGuid>c988e858-8aaa-448b-8c2e-b903cd93b2cd</ProjectGuid>
     <RootNamespace>jreq</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
@@ -117,9 +117,11 @@
     <ClCompile Include="src/epeios/fil.cpp"/>
     <ClCompile Include="src/epeios/fnm.cpp"/>
     <ClCompile Include="src/epeios/jniq.cpp"/>
-    <ClCompile Include="src/epeios/jre.cpp"/>
     <ClCompile Include="src/epeios/jrebse.cpp"/>
     <ClCompile Include="src/epeios/lcl.cpp"/>
+    <ClCompile Include="src/epeios/n4all.cpp"/>
+    <ClCompile Include="src/epeios/n4allw.cpp"/>
+    <ClCompile Include="src/epeios/n4jre.cpp"/>
     <ClCompile Include="src/epeios/plgn.cpp"/>
     <ClCompile Include="src/epeios/plgncore.cpp"/>
     <ClCompile Include="src/epeios/rgstry.cpp"/>

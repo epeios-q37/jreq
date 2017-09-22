@@ -17,96 +17,91 @@
 	along with the Epeios framework.  If not, see <http://www.gnu.org/licenses/>
 */
 
-// Java Runtime Environment.
-// This library is the shared part between the 'jreq' tool, and the 'scljre' library.
+// Native 4 (for) ALL
+// The 'N4ALL' (Native For All) project makes it possible to easily provide native component
+// to runtime systems for interpreted languages (Node.js (JavaScript), JRE (Java), Zend (PHP)...).
+// This library provides the abstraction layer between the runtime and the component.
 
-#ifndef JRE_INC_
-# define JRE_INC_
+#ifndef N4ALL_INC_
+# define N4ALL_INC_
 
-# define JRE_NAME		"JRE"
+# define N4ALL_NAME		"N4ALL"
 
-# if defined( E_DEBUG ) && !defined( JRE_NODBG )
-#  define JRE_DBG
+# if defined( E_DEBUG ) && !defined( N4ALL_NODBG )
+#  define N4ALL_DBG
 # endif
 
-# include "jrebse.h"
-
-# include "sclmisc.h"
-
 # include "err.h"
-# include "fdr.h"
+# include "sclmisc.h"
+# include "tol.h"
 
-# define JRE_REGISTER_FUNCTION_NAME		JRERegister
+# define N4ALL_REGISTER_FUNCTION_NAME		N4ALLRegister
 
-namespace jre {
-	qENUM( Type ) {
-		tString,
-		tamount,
-		t_Undefined
-	};
+namespace n4all {
+	typedef int sType;	// Generic type of type.
 
-	class cArguments {
+	class cCaller {
 	protected:
-		virtual void JREGetValue(
-			int Index,
-			eType Type,
+		virtual void N4ALLGetArgument(
+			bso::sU8,
+			sType Type,
 			void *Value ) = 0;
-		virtual void JRESetReturnValue(
-			eType Type,
+		virtual void N4ALLSetReturnValue(
+			sType Type,
 			const void *Value ) = 0;
 	public:
-		qCALLBACK( Arguments );
-		void GetValue(
+		qCALLBACK( Caller );
+		void GetArgument(
 			int Index,
-			eType Type,
+			sType Type,
 			void *Value )
 		{
-			return JREGetValue( Index, Type, Value );
+			return N4ALLGetArgument( Index, Type, Value );
 		}
 		void SetReturnValue(
-			eType Type,
+			sType Type,
 			const void *Value )
 		{
-			return JRESetReturnValue( Type, Value );
+			return N4ALLSetReturnValue( Type, Value );
 		}
 	};
 
 	class cRegistrar {
 	protected:
-		virtual void JRERegister( void *Function ) = 0;
+		virtual void N4ALLRegister( void *Function ) = 0;
 	public:
 		qCALLBACK( Registrar );
 		void Register( void *Function )
 		{
-			return JRERegister( Function );
+			return N4ALLRegister( Function );
 		}
 	};
 
 	// Destroyed by launching by 'delete', so must be created with 'new' !
 	class cLauncher {
 	protected:
-		virtual void JRELaunch(
+		virtual void N4ALLLaunch(
 			void *Function,
-			cArguments &Arguments ) = 0;
-		virtual void JREInfo( str::dString &Info ) = 0;
+			cCaller &Caller ) = 0;
+		virtual void N4ALLInfo( str::dString &Info ) = 0;
 	public:
 		qCALLBACK( Launcher );
 		void Launch(
 			void *Function,
-			cArguments &Arguments )
+			cCaller &Caller )
 		{
-			return JRELaunch( Function, Arguments );
+			return N4ALLLaunch( Function, Caller );
 		}
 		void Info( str::dString &Info )
 		{
-			return JREInfo( Info );
+			return N4ALLInfo( Info );
 		}
 	};
 
-#define JRE_DATA_VERSION	"1"
+#define N4ALL_DATA_VERSION	"1"
 
 #pragma pack( push, 1)
-	// NOTA : If modified, increment 'JRE_DATA_VERSION' !
+	// NOTA : If modified, increment 'N4ALL_DATA_VERSION' !
 	class sData {
 	public:
 		const char *Version;	// Always first.

@@ -524,6 +524,10 @@
   <Translation language="fr">Divergence d'encodage</Translation>
   <Translation language="en">Encoding discrepancy</Translation>
  </Translations>
+ <Translations text="NoRegisteredComponent">
+  <Translation language="fr">(pas de composant enregistré)</Translation>
+  <Translation language="en">(no registered component)</Translation>
+ </Translations>
  <Translations text="TheText">
   <Translation language="fr">Texte provenant du composant natif !</Translation>
   <Translation language="en">Text from the natif component !</Translation>

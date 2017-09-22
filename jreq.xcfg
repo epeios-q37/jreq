@@ -3,9 +3,23 @@
  <Configuration target="jreq">
   <Parameters>
    <Language>en</Language>
+   <Command>Launch</Command>
   </Parameters>
   <Definitions/>
   <Locale/>
-  <Arguments/>
+  <Arguments>
+   <Argument id="Usage" Description="UsageCommandDescription" long="help" Value="Usage"/>
+   <Argument id="Version" Description="VersionCommandDescription" long="version" Value="Version"/>
+   <Argument id="License" Description="LicenseCommandDescription" long="license" Value="License"/>
+   <Argument id="LaunchCommand" Description="LaunchCommandDescription" long="launch" short="l" Value="Launch" Usage="%TestFlag% %TestOption% %TestArgument%"/>
+   <Argument id="TestFlag" Description="TestFlagDescription" long="flag" short="f" Path="Flag" Value="TestFlag"/>
+   <Argument id="TestOption" Description="TestOptionDescription" long="option" short="o" Path="Option" Label="TestOptionLabel"/>
+   <Argument id="ComponentArgument" Description="ComponentArgumentDescription" Path="ComponentFilename" Label="ComponentArgumentLabel"/>
+   <Layouts>
+    <Layout command="Launch">
+     <Link index="0" Target="ComponentArgument"/>
+    </Layout>
+   </Layouts>
+  </Arguments>
  </Configuration>
 </Configurations>
