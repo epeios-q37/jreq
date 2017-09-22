@@ -166,7 +166,6 @@ namespace {
 	{
 		delete Object;
 	}
-
 	inline void Throw_( const char *Message )
 	{
 		JNIEnv *Env = jniq::GetEnv();

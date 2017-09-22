@@ -274,6 +274,7 @@ namespace n4jre {
 		H( sJLong, Long );
 # undef H
 	public:
+		qCALLBACK( Object );
 		void Set(
 			const char *Name,
 			const char *Signature,
