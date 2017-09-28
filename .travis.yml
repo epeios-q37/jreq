@@ -19,7 +19,8 @@ language: java
 
 script:
 - make -j
-- java -Djava.library.path=. JREqTest
+# - java -Djava.library.path=. JREqTest
+- java JREqTest
 
 # To disable building on tags. Tags are supposed to begin with 'v' and only containing digits.
 branches:
