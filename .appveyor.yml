@@ -1,5 +1,5 @@
 environment:
-  version: 
+  version: 20170928
   affix: jreq
   ext: dll
   dir: $(affix)-v$(version)-$(platform)
