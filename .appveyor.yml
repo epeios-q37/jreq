@@ -22,7 +22,7 @@ os :
 - Visual Studio 2013
 
 test_script:
-- echo "***** 'JREq' TEST BEGIN *****" && C:/%JDK%java JREqTest && echo "***** 'JREq' TEST END *****"
+- echo "***** 'JREq' TEST BEGIN *****" && C:/%JDK%java Test && echo "***** 'JREq' TEST END *****"
 # - java -Djava.library.path=x64/Release JREqTest
 
 # matrix:
@@ -61,7 +61,7 @@ after_build:
 
 artifacts:
 - path: $(zip)
-- path: *.tar.gz
+- path: '*.tar.gz'
 
 deploy:
   - provider: GitHub
