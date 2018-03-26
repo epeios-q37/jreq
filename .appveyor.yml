@@ -61,7 +61,8 @@ after_build:
 
 artifacts:
 - path: $(zip)
-- path: '*.tar.gz'
+- name: tgz
+  path: '*.tar.gz'
 
 deploy:
   - provider: GitHub
@@ -71,7 +72,7 @@ deploy:
       secure: kKebvPLjikQbZ7E1Vm8omoYc9K0wOcKxjWsglp3+D4fV9ev/FaWr8ZBI+AseOTis
     draft: false
     prerelease: false
-    artifact: '*.tar.gz'
+    artifact: tgz
     on:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       jdk_ver: "1.6.0"
