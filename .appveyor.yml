@@ -6,9 +6,9 @@ environment:
   ext: dll
   zip: $(affix)-v$(version)-win-java-v$(jdk_ver)-$(platform).zip
   matrix:
-    - jdk_ver: "1.8.0"
-    - jdk_ver: "1.7.0"
     - jdk_ver: "1.6.0"
+    - jdk_ver: "1.7.0"
+    - jdk_ver: "1.8.0"
 
 platform:
 - x86
