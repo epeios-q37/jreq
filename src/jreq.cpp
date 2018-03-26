@@ -35,6 +35,16 @@
 #define MDEF( name ) qCDEF( char *, name, #name );
 
 namespace {
+	wrapper::rLauncher &GetLauncher_( jlong Long )
+	{
+		if ( Long == 0 )
+			qRGnr();
+
+		return *(wrapper::rLauncher *)Long;
+	}
+}
+
+namespace {
 	namespace{
 		void GetInfo_(
 			jint Version,
@@ -42,12 +52,12 @@ namespace {
 		{
 		qRH
 			flx::rStringOFlow BaseFlow;
-			txf::sOFlow Flow;
+			txf::sWFlow Flow;
 		qRB
 			BaseFlow.Init( Info );
 			Flow.Init( BaseFlow );
 
-			Flow << sclmisc::SCLMISCProductName << " v" << VERSION << " - JNI v" << ( ( Version & 0xff00 ) >> 16 ) << '.' << ( Version & 0xff )  << txf::nl
+			Flow << sclmisc::SCLMISCProductName << " v" << VERSION << " - JNI v" << ( ( Version & 0xffff0000 ) >> 16 ) << '.' << ( Version & 0xffff )  << txf::nl
 				<< txf::pad << "Build : " __DATE__ " " __TIME__ " (" <<  cpe::GetDescription() << ')';
 		qRR
 		qRT
@@ -73,7 +83,7 @@ namespace {
 	}
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_JREq_wrapperInfo(
+extern "C" JNIEXPORT jstring JNICALL Java_info_q37_jreq_Wrapper_wrapperInfo(
 	JNIEnv *Env,
 	jclass )
 {
@@ -110,9 +120,10 @@ namespace {
 	}
 }
 
-extern "C" JNIEXPORT jstring JNICALL Java_JREq_componentInfo(
+extern "C" JNIEXPORT jstring JNICALL Java_info_q37_jreq_Wrapper_componentInfo(
 	JNIEnv *Env,
-	jclass )
+	jclass,
+	jlong Launcher )
 {
 	jstring JString;
 qRFH
@@ -121,7 +132,7 @@ qRFH
 qRFB
 	Info.Init();
 
-	if ( !wrapper::GetLauncherInfo( Info ) )
+	if ( !GetLauncher_( Launcher ).GetInfo( Info ) )
 		sclmisc::GetBaseTranslation( "NoRegisteredComponent", Info );
 
 	JString = Env->NewStringUTF( Info.Convert( Buffer ) );
@@ -131,7 +142,7 @@ qRFE( ERRFinal_( Env ) )
 	return JString;
 }
 
-extern "C" JNIEXPORT void JNICALL Java_JREq_init(
+extern "C" JNIEXPORT void JNICALL Java_info_q37_jreq_Wrapper_init(
 	JNIEnv *Env,
 	jclass,
 	jstring RawLocation )
@@ -180,15 +191,16 @@ namespace {
 }
 
 
-extern "C" JNIEXPORT void JNICALL Java_JREq_register(
+extern "C" JNIEXPORT jlong JNICALL Java_info_q37_jreq_Wrapper_register(
 	JNIEnv *Env,
 	jclass,
 	jstring RawArguments )
 {
-qRFH
+	wrapper::rLauncher *Launcher = NULL;
+qRFH;
 	str::wString Arguments;
 	str::wString ComponentFilename;
-qRFB
+qRFB;
 	Arguments.Init();
 	jniq::Convert( RawArguments, Arguments, Env );
 
@@ -197,28 +209,38 @@ qRFB
 	ComponentFilename.Init();
 	sclmisc::MGetValue( registry::parameter::ComponentFilename, ComponentFilename );
 
-	Shared_.New_Object = wrapper::NewObject;
+	Shared_.NewObject = wrapper::NewObject;
+	Shared_.NewObjectArray = wrapper::NewObjectArray;
 	Shared_.Delete = Delete_;
 	Shared_.Malloc = n4jre::N4JREMalloc;
 	Shared_.Free = n4jre::N4JREFree;
 	Shared_.Throw = Throw_;
 
-	wrapper::Register( ComponentFilename, Rack_, &Shared_ );
-qRFR
-qRFT
+	Launcher = new wrapper::rLauncher;
+
+	if ( Launcher == NULL )
+		qRAlc();
+
+	Launcher->Init(ComponentFilename, dlbrry::nPrefixAndExt, Rack_, &Shared_, false);
+qRFR;
+	if ( Launcher != NULL )
+		delete Launcher;
+qRFT;
 qRFE( ERRFinal_( Env ) )
+	return (jlong)Launcher;
 }
 
-extern "C" JNIEXPORT jobject JNICALL Java_JREq_wrapper(
+extern "C" JNIEXPORT jobject JNICALL Java_info_q37_jreq_Wrapper_call(
 	JNIEnv *Env,
 	jclass,
+	jlong Launcher, 
 	jint Index,
 	jobjectArray Args )
 {
 	jobject Return = NULL;
 qRFH
 qRFB
-	Return = wrapper::Launch( Index, Args );
+	Return = wrapper::Call( GetLauncher_( Launcher ), Index, Args );
 qRFR
 qRFT
 qRFE( ERRFinal_( Env ) )

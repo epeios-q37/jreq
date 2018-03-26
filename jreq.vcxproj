@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns:xpp="http://q37.info/xppq" DefaultTargets="Build">
+  <PropertyGroup Label="UserMacros"/>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,7 +22,7 @@
   <Import Project="Windows.targets"/>
   <Import Project="Details.props"/>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>bfad3838-09be-4aab-8d16-c66d85eac19a</ProjectGuid>
+    <ProjectGuid>ce786b5d-3c04-4f73-a0bb-6ea0d2e10e5b</ProjectGuid>
     <RootNamespace>jreq</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
@@ -42,6 +43,7 @@
   </ImportGroup>
   <PropertyGroup>
     <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;src/epeios;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <PreBuildEvent/>
@@ -49,7 +51,7 @@
       <Command>copy $(TargetPath) $(ProjectDir)</Command>
     </PostBuildEvent>
     <ClCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CI;APPVEYOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
@@ -66,7 +68,9 @@
     <ClCompile Include="src/epeios/aem.cpp"/>
     <ClCompile Include="src/epeios/bch.cpp"/>
     <ClCompile Include="src/epeios/bitbch.cpp"/>
+    <ClCompile Include="src/epeios/bomhdl.cpp"/>
     <ClCompile Include="src/epeios/bso.cpp"/>
+    <ClCompile Include="src/epeios/cdgb64.cpp"/>
     <ClCompile Include="src/epeios/cio.cpp"/>
     <ClCompile Include="src/epeios/cpe.cpp"/>
     <ClCompile Include="src/epeios/crptgr.cpp"/>
@@ -80,14 +84,17 @@
     <ClCompile Include="src/epeios/epsmsc.cpp"/>
     <ClCompile Include="src/epeios/err.cpp"/>
     <ClCompile Include="src/epeios/fdr.cpp"/>
+    <ClCompile Include="src/epeios/fil.cpp"/>
     <ClCompile Include="src/epeios/flf.cpp"/>
     <ClCompile Include="src/epeios/flsq.cpp"/>
     <ClCompile Include="src/epeios/flw.cpp"/>
     <ClCompile Include="src/epeios/flx.cpp"/>
+    <ClCompile Include="src/epeios/fnm.cpp"/>
     <ClCompile Include="src/epeios/ias.cpp"/>
     <ClCompile Include="src/epeios/idsq.cpp"/>
     <ClCompile Include="src/epeios/iof.cpp"/>
     <ClCompile Include="src/epeios/iop.cpp"/>
+    <ClCompile Include="src/epeios/lcl.cpp"/>
     <ClCompile Include="src/epeios/lck.cpp"/>
     <ClCompile Include="src/epeios/lst.cpp"/>
     <ClCompile Include="src/epeios/lstbch.cpp"/>
@@ -98,6 +105,7 @@
     <ClCompile Include="src/epeios/mtx.cpp"/>
     <ClCompile Include="src/epeios/ntvstr.cpp"/>
     <ClCompile Include="src/epeios/que.cpp"/>
+    <ClCompile Include="src/epeios/rgstry.cpp"/>
     <ClCompile Include="src/epeios/sdr.cpp"/>
     <ClCompile Include="src/epeios/stkbse.cpp"/>
     <ClCompile Include="src/epeios/stkbch.cpp"/>
@@ -105,34 +113,28 @@
     <ClCompile Include="src/epeios/stkctn.cpp"/>
     <ClCompile Include="src/epeios/str.cpp"/>
     <ClCompile Include="src/epeios/strng.cpp"/>
+    <ClCompile Include="src/epeios/stsfsm.cpp"/>
     <ClCompile Include="src/epeios/tagsbs.cpp"/>
+    <ClCompile Include="src/epeios/tht.cpp"/>
+    <ClCompile Include="src/epeios/thtsub.cpp"/>
     <ClCompile Include="src/epeios/tol.cpp"/>
     <ClCompile Include="src/epeios/txf.cpp"/>
     <ClCompile Include="src/epeios/tys.cpp"/>
     <ClCompile Include="src/epeios/uys.cpp"/>
     <ClCompile Include="src/epeios/utf.cpp"/>
+    <ClCompile Include="src/epeios/xml.cpp"/>
+    <ClCompile Include="src/epeios/xpp.cpp"/>
     <ClCompile Include="src/epeios/xtf.cpp"/>
     <ClCompile Include="src/epeios/llio.cpp"/>
     <ClCompile Include="src/epeios/wllio.cpp"/>
-    <ClCompile Include="src/epeios/bomhdl.cpp"/>
-    <ClCompile Include="src/epeios/cdgb64.cpp"/>
     <ClCompile Include="src/epeios/dlbrry.cpp"/>
-    <ClCompile Include="src/epeios/fil.cpp"/>
-    <ClCompile Include="src/epeios/fnm.cpp"/>
     <ClCompile Include="src/epeios/jniq.cpp"/>
     <ClCompile Include="src/epeios/jrebse.cpp"/>
-    <ClCompile Include="src/epeios/lcl.cpp"/>
     <ClCompile Include="src/epeios/n4all.cpp"/>
     <ClCompile Include="src/epeios/n4allw.cpp"/>
     <ClCompile Include="src/epeios/n4jre.cpp"/>
     <ClCompile Include="src/epeios/plgn.cpp"/>
     <ClCompile Include="src/epeios/plgncore.cpp"/>
-    <ClCompile Include="src/epeios/rgstry.cpp"/>
-    <ClCompile Include="src/epeios/stsfsm.cpp"/>
-    <ClCompile Include="src/epeios/tht.cpp"/>
-    <ClCompile Include="src/epeios/thtsub.cpp"/>
-    <ClCompile Include="src/epeios/xml.cpp"/>
-    <ClCompile Include="src/epeios/xpp.cpp"/>
     <ClCompile Include="src/epeios/sclargmnt.cpp"/>
     <ClCompile Include="src/epeios/sclmisc.cpp"/>
     <ClCompile Include="src/epeios/sclerror.cpp"/>

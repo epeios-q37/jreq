@@ -40,10 +40,15 @@
 # endif
 
 namespace n4jre {
-	// As defined in the 'Java' headers.
+	// Mimics the 'Java' headers.
+	typedef unsigned char sJBoolean;
 	typedef bso::sS8 sJByte;
+	typedef bso::sS16 sJShort;
 	typedef bso::sS32 sJInt;
 	typedef bso::sS64 sJLong;
+
+	typedef long sJSize;
+	qCDEF( long, SizeMax, LONG_MAX );
 
 	qENUM( Handling )
 	{
@@ -60,6 +65,7 @@ namespace n4jre {
 	extern fMalloc N4JREMalloc;
 	extern fFree N4JREFree;
 
+	// Only for primitive types.
 	template <typename type> class rJArray_
 	{
 	private:
@@ -253,6 +259,12 @@ namespace n4jre {
 			sValue &Object,	// Will contain the returned object.
 			int ArgC,
 			sValue *ArgV ) = 0;
+		// Both below methods works only on objects array ('jobjectsArray' casted to 'jobject').
+		virtual sJSize N4JREGetLength( void ) = 0;
+		virtual cObject *N4JREGetElement( sJSize Index ) = 0;
+		virtual void N4JRESetElement(
+			sJSize Index,
+			cObject *Object ) = 0;
 # define H( type, name )\
 	protected:\
 		virtual type N4JRECall##name##Method(\
@@ -270,6 +282,8 @@ namespace n4jre {
 			return N4JRECall##name##Method( Method, Signature, ArgC, ArgV );\
 		}
 		H( void, Void );
+		H( sJBoolean, Boolean );
+		H( sJShort, Short );
 		H( sJInt, Int );
 		H( sJLong, Long );
 # undef H
@@ -291,25 +305,49 @@ namespace n4jre {
 		{
 			return N4JRECallObjectMethod( Method, Signature, Object, ArgC, ArgV );
 		}
+		sJSize GetLength( void )
+		{
+			return N4JREGetLength();
+		}
+		cObject *GetElement( sJSize Index )
+		{
+			return N4JREGetElement( Index );
+		}
+		void GetElement(
+			sJSize Index,
+			cObject *Object )
+		{
+			return N4JRESetElement( Index, Object );
+		}
+		void SetElement(
+			sJSize Index,
+			cObject *Object )
+		{
+			return N4JRESetElement( Index, Object );
+		}
 	};
 
 	typedef cObject sJObject_;
 	typedef sJObject_* sJObject;
 
-	typedef cObject *(* fNew_Object )(
+	typedef cObject *(* fNewObject )(
 		const char *Class,
 		const char *Signature,
 		int ArgC,
 		sValue *ArgV );
 
+	typedef cObject *(* fNewObjectArray)(
+		sJSize Length,
+		const char *Class );
+
 	typedef void( *fDelete )( cObject * );
 
 	typedef void ( *fThrow )( const char *Message );
 
-
 	struct gShared {
 	public:
-		fNew_Object New_Object;
+		fNewObject NewObject;
+		fNewObjectArray NewObjectArray;
 		// Below three functions purpose is that resources allocation/deallocation occurs in the same binary, otherwise there would be crashes.
 		fDelete Delete;
 		fMalloc Malloc;
@@ -317,7 +355,8 @@ namespace n4jre {
 		fThrow Throw;
 		void reset( bso::sBool P = true )
 		{
-			New_Object = NULL;
+			NewObject = NULL;
+			NewObjectArray = NULL;
 			Delete = NULL;
 			Malloc = NULL;
 			Free = NULL;

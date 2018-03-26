@@ -240,6 +240,14 @@ public:\
 		d##name::operator =( O );\
 \
 		return *this;\
+	}\
+	const d##name &operator *( void ) const\
+	{\
+		return *this;\
+	}\
+	d##name &operator *( void )\
+	{\
+		return *this;\
 	}
 
 // Wraps 'vName' to make it instantiable.
@@ -1301,7 +1309,9 @@ public:\
 	}\
 };
 
-#define system	use_System_from_tol_library	// Pour forcer l'utilisation de 'tol::System(...)'.
+// Helps to temporary disable the 'system' warning message when 'system' used by underlying library.
+# define TOL_SYSTEM_MACRO	use_System_from_tol_library	// To force the use of 'tol::System(...)'.
+# define system	TOL_SYSTEM_MACRO
 
 namespace tol {
 	class UP__
@@ -2032,13 +2042,15 @@ template <typename type, typename _type, type False, type Error, type Undefined>
 	__attribute__( ( constructor ) ) static void discriminator##_q37ctor( void )
 #else
 # define Q37_GCTOR( discriminator )\
-	class discriminator##_q37gctor\
-	{\
-	public:\
-		discriminator##_q37gctor( void );\
-	};\
-	\
-	static discriminator##_q37gctor discriminator##_Q37gctor;\
+	namespace {\
+		class discriminator##_q37gctor\
+		{\
+		public:\
+			discriminator##_q37gctor( void );\
+		};\
+		\
+		discriminator##_q37gctor discriminator##_Q37gctor;\
+	}\
 	\
 	discriminator##_q37gctor::discriminator##_q37gctor( void )
 #endif
@@ -2048,13 +2060,15 @@ template <typename type, typename _type, type False, type Error, type Undefined>
 	__attribute__( ( destructor ) ) static void discriminator##_q37gdtor( void )
 #else
 # define Q37_GDTOR( discriminator )\
+	namespace  {\
 	class discriminator##_q37gdtor\
-	{\
-	public:\
-		~discriminator##_q37gdtor( void );\
-	};\
-	\
-	static discriminator##_q37gdtor discriminator##_Q37gdtor;\
+		{\
+		public:\
+			~discriminator##_q37gdtor( void );\
+		};\
+		\
+		discriminator##_q37gdtor discriminator##_Q37gdtor;\
+	}\
 	\
 	discriminator##_q37gdtor::~discriminator##_q37gdtor( void )
 #endif

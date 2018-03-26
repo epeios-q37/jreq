@@ -1,8 +1,9 @@
+# jreq.appveyor
+
 environment:
-  version: 20170928
+  version: 20180326
   affix: jreq
   ext: dll
-  dir: $(affix)-v$(version)-$(platform)
   zip: $(affix)-v$(version)-win-java-v$(jdk_ver)-$(platform).zip
   matrix:
     - jdk_ver: "1.8.0"
@@ -31,26 +32,57 @@ test_script:
 skip_tags: true
 
 after_build:
+
+# '.zip' part.
 - set oddity=
 - if "%platform%"=="x86" set oddity= (x86)
 - set JDK="Program Files%oddity%/Java/jdk%jdk_ver%/bin/"
 - echo %JDK%
 - C:/%JDK%javac src/*.java -d .
+- set dir=$%affix%-v$%version%-$%platform%
 - mkdir %dir% || exit 1
 - cp %affix%.%ext% %dir%\%affix%.%ext% || exit 1
 - cp *.class %dir%\ || exit 1
 - 7z a %zip% %dir%
 
+# '.tar.gz' part (for NPM installation : 'node-pre-gyp')
+- if "%platform%"=="x86" set platform=ia32
+- echo | set /p="%affix%-v%version%" >>tmpfile.tmp || true
+- echo | set /p="-win32-" >>tmpfile.tmp || true
+- echo | set /p="%platform%" >>tmpfile.tmp || true
+- set /p addon= <tmpfile.tmp
+- echo .%addon%.
+- set dir=win32-%platform%
+- mkdir %dir%
+- copy %affix%.dll %dir%
+# It MUST be '.tar.gz' to be retrieved by 'node-pre-gyp' when installed with 'npm' !
+- 7z a -ttar -so dummy %dir% | 7z a -si %addon%.tar.gz
+
+
 artifacts:
 - path: $(zip)
+- path: *.tar.gz
 
 deploy:
-  tag: v$(version)
-  description: ''
-  provider: GitHub
-  auth_token:
-    secure: kKebvPLjikQbZ7E1Vm8omoYc9K0wOcKxjWsglp3+D4fV9ev/FaWr8ZBI+AseOTis
-  draft: false
-  prerelease: false
-  on:
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - provider: GitHub
+    tag: v$(version)
+    description: ''
+    auth_token:
+      secure: kKebvPLjikQbZ7E1Vm8omoYc9K0wOcKxjWsglp3+D4fV9ev/FaWr8ZBI+AseOTis
+    draft: false
+    prerelease: false
+    artifact: $(zip)
+    on:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
+  - provider: GitHub
+    tag: v$(version)
+    description: ''
+    auth_token:
+      secure: kKebvPLjikQbZ7E1Vm8omoYc9K0wOcKxjWsglp3+D4fV9ev/FaWr8ZBI+AseOTis
+    draft: false
+    prerelease: false
+    artifact: *.tar.gz
+    on:
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      jdk_ver: "1.6.0"

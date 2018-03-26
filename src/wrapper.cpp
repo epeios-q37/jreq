@@ -1,20 +1,20 @@
 /*
-	Copyright (C) 2016 by Claude SIMON (http://zeusw.org/epeios/contact.html).
+	Copyright (C) 2017 by Claude SIMON (http://zeusw.org/epeios/contact.html).
 
-	This file is part of 'NJSq'.
+	This file is part of 'JREq'.
 
-    'NJSq' is free software: you can redistribute it and/or modify it
+    'JREq' is free software: you can redistribute it and/or modify it
     under the terms of the GNU Affero General Public License as published
     by the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    'NJSq' is distributed in the hope that it will be useful,
+    'JREq' is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with 'NJSq'.  If not, see <http://www.gnu.org/licenses/>.
+    along with 'JREq'.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "wrapper.h"
@@ -288,6 +288,32 @@ namespace {
 
 			Set_( JObject, Env, Object );
 		}
+		virtual n4jre::sJSize N4JREGetLength( void ) override
+		{
+			return jniq::GetLength( Object_, jniq::GetEnv() );
+		}
+		virtual cObject *N4JREGetElement( n4jre::sJSize Index ) override
+		{
+			rObject_ *Object = NULL;
+		qRH;
+		qRB;
+			if ( ( Object = new rObject_ ) == NULL  )
+				qRAlc();
+
+			Object->Init( jniq::GetElement( Object_, Index, jniq::GetEnv() ) );
+		qRR;
+			if ( Object != NULL )
+				delete Object;
+		qRT;
+		qRE;
+			return Object;
+		}
+		virtual void N4JRESetElement(
+			n4jre::sJSize Index,
+			cObject *Object ) override
+		{
+			jniq::SetElement( Object_, Index, ((rObject_ *)Object)->Object_ );
+		}
 		virtual void N4JRECallVoidMethod(
 			const char *Method,
 			const char *Signature,
@@ -310,6 +336,26 @@ namespace {
 				delete Args;
 			}
 		qRE
+		}
+		virtual n4jre::sJBoolean N4JRECallBooleanMethod(
+			const char *Method,
+			const char *Signature,
+			int ArgC,
+			n4jre::sValue *ArgV ) override
+		{
+			JNIEnv *Env = jniq::GetEnv();
+
+			return CallMethod_<jboolean>( Method, Signature, ArgC, ArgV, Env->functions->CallBooleanMethod, Env );
+		}
+		virtual n4jre::sJShort N4JRECallShortMethod(
+			const char *Method,
+			const char *Signature,
+			int ArgC,
+			n4jre::sValue *ArgV ) override
+		{
+			JNIEnv *Env = jniq::GetEnv();
+
+			return CallMethod_<jshort>( Method, Signature, ArgC, ArgV, Env->functions->CallShortMethodA, Env );
 		}
 		virtual n4jre::sJInt N4JRECallIntMethod(
 			const char *Method,
@@ -396,9 +442,12 @@ namespace {
 			if ( Type != n4jre::t_Undefined )
 				qRGnr();
 
-			rObject_ *Object = (rObject_ *)Value;
+			if ( Value != NULL ) {
+				rObject_ *Object = (rObject_ *)Value;
 
-			ReturnedValue_ = Object->Object();
+				ReturnedValue_ = Object->Object();
+			} else
+				ReturnedValue_ = NULL;
 		}
 	public:
 		void reset( bso::sBool = true )
@@ -457,8 +506,38 @@ qRE
 	return Object;
 }
 
+n4jre::cObject *wrapper::NewObjectArray(
+	n4jre::sJSize Length,
+	const char *ClassName )
+{
+	rObject_ *Object = NULL;
+qRH;
+	JNIEnv *Env = NULL;
+	jclass Class = NULL;
+qRB;
+	Env = jniq::GetEnv();
+	Class = jniq::FindClass( ClassName, Env );
 
-jobject wrapper::Launch(
+	Object = ::new rObject_;
+
+	if ( Object == NULL )
+		qRAlc();
+
+	if ( (ClassName == NULL) || (*ClassName == 0) )
+		qRGnr();
+
+	Object->Init( Env->NewObjectArray( Length, Class, NULL ) );
+qRR
+	if ( Object != NULL )
+		delete Object;
+qRT
+qRE
+	return Object;
+}
+
+
+jobject wrapper::Call(
+	rLauncher &Launcher,
 	jint Index,
 	jobjectArray &Args )
 {
@@ -468,7 +547,9 @@ qRH
 qRB
 	Caller.Init( Args );
 
-	n4allw::GetLauncher().Launch( n4allw::GetFunction( Index ), Caller );
+	Launcher.Call( Index, Caller );
+
+//	n4allw::GetLauncher().Launch( n4allw::GetFunction( Index ), Caller );
 
 	if ( sclerror::IsErrorPending() )
 		qRAbort();	// To force the handling of a pending error.

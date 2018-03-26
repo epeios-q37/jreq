@@ -291,6 +291,68 @@ namespace jniq {
 
 		Env->SetObjectField( Object, GetFieldID( Object, Name, Signature ), Value );
 	}
+
+	template <typename type> inline jsize GetLength(
+		type Array,
+		JNIEnv *Env = NULL )
+	{
+		jsize Length = 0;
+
+		Env = GetEnv( Env );
+
+		Length = Env->GetArrayLength( Array );
+
+		if ( Length < 0 )
+			qRFwk();	// Probably 'Array' is NOT an array (bad casting).
+
+		return Length;
+	}
+
+	template <typename type> inline jobject GetElement(
+		type Array,
+		jsize Index,
+		JNIEnv *Env = NULL )
+	{
+		Env = GetEnv( Env );
+
+		return Env->GetObjectArrayElement( Array, Index );
+	}
+
+	template <typename type> inline void SetElement(
+		type Array,
+		jsize Index,
+		jobject Object,
+		JNIEnv *Env = NULL )
+	{
+		Env = GetEnv( Env );
+
+		return Env->SetObjectArrayElement( Array, Index, Object );
+	}
+
+	// Don't know what happens if 'Array' isn't a 'jobjectArray' !
+	inline jsize GetLength(
+		jobject Array,
+		JNIEnv *Env = NULL )
+	{
+		return GetLength( (jobjectArray)Array, Env );
+	}
+
+	inline jobject GetElement(
+		jobject Array,
+		jsize Index,
+		JNIEnv *Env = NULL )
+	{
+		return GetElement( (jobjectArray)Array, Index, Env );
+	}
+
+	inline void SetElement(
+		jobject Array,
+		jsize Index,
+		jobject Object,
+		JNIEnv *Env = NULL )
+	{
+		return SetElement( (jobjectArray)Array, Index, Object, Env );
+	}
 }
 
 #endif
