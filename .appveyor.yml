@@ -71,9 +71,10 @@ deploy:
       secure: kKebvPLjikQbZ7E1Vm8omoYc9K0wOcKxjWsglp3+D4fV9ev/FaWr8ZBI+AseOTis
     draft: false
     prerelease: false
-    artifact: $(zip)
+    artifact: '*.tar.gz'
     on:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      jdk_ver: "1.6.0"
 
   - provider: GitHub
     tag: v$(version)
@@ -82,7 +83,6 @@ deploy:
       secure: kKebvPLjikQbZ7E1Vm8omoYc9K0wOcKxjWsglp3+D4fV9ev/FaWr8ZBI+AseOTis
     draft: false
     prerelease: false
-    artifact: '*.tar.gz'
+    artifact: $(zip)
     on:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      jdk_ver: "1.6.0"
