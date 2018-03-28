@@ -22,7 +22,7 @@
   <Import Project="Windows.targets"/>
   <Import Project="Details.props"/>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>d34d72a8-40b6-4887-be98-9dfc4b5d7850</ProjectGuid>
+    <ProjectGuid>b40acf23-5415-4ef3-aa20-d76ab56c812b</ProjectGuid>
     <RootNamespace>jreq</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>

@@ -1,14 +1,14 @@
 {
   "name": "jreq",
-  "version": "2018.3.26",
+  "version": "2018.3.28",
   "author": "Claude SIMON (http://q37.info/contact/)",
   "description": "",
   "main": "JREq.js",
   "binary": {
     "module_name": "jreq",
     "module_path": "./",
-    "remote_path": "./epeios-q37/jreq/releases/download/v20180326/",
-    "package_name": "{module_name}-v20180326-{platform}-{arch}.tar.gz",
+    "remote_path": "./epeios-q37/jreq/releases/download/v20180328/",
+    "package_name": "{module_name}-v20180328-{platform}-{arch}.tar.gz",
     "host": "https://github.com"
   },
   "dependencies": {},

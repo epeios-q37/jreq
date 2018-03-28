@@ -1,7 +1,7 @@
 # jreq.appveyor
 
 environment:
-  version: 20180326
+  version: 20180328
   affix: jreq
   ext: dll
   zip: $(affix)-v$(version)-win-java-v$(jdk_ver)-$(platform).zip
