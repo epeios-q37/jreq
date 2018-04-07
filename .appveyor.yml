@@ -1,7 +1,7 @@
 # jreq.appveyor
 
 environment:
-  version: 20180328
+  version: 20180407
   affix: jreq
   ext: dll
   zip: $(affix)-v$(version)-win-java-v$(jdk_ver)-$(platform).zip
@@ -32,19 +32,17 @@ test_script:
 skip_tags: true
 
 after_build:
-
 # '.zip' part.
 - set oddity=
 - if "%platform%"=="x86" set oddity= (x86)
 - set JDK="Program Files%oddity%/Java/jdk%jdk_ver%/bin/"
 - echo %JDK%
 - C:/%JDK%javac src/*.java -d .
-- set dir=$%affix%-v$%version%-$%platform%
+- set dir=%affix%-v%version%-%platform%
 - mkdir %dir% || exit 1
 - cp %affix%.%ext% %dir%\%affix%.%ext% || exit 1
 - cp *.class %dir%\ || exit 1
 - 7z a %zip% %dir%
-
 # '.tar.gz' part (for NPM installation : 'node-pre-gyp')
 - if "%platform%"=="x86" set platform=ia32
 - echo | set /p="%affix%-v%version%" >>tmpfile.tmp || true

@@ -41,12 +41,11 @@ namespace jrebse {
 	class sObject_
 	{
 	protected:
+		JNIEnv *Env_;
 		qPMV( _jobject, O_, Object_ );
 		virtual void reset_( bso::sBool P = true )
 		{}
-		virtual jobject Init_(
-			jobject Object,
-			JNIEnv *Env )
+		virtual jobject Init_( jobject Object )
 		{
 			return Object;
 		}
@@ -55,60 +54,48 @@ namespace jrebse {
 		{
 			reset_( P );
 
+			Env_ = NULL;
 			Object_ = NULL;
 		}
 		qCDTOR( sObject_ );
 		void Init(
+			JNIEnv *Env,
 			jobject Object,
-			jclass Class,
-			JNIEnv *Env = NULL )
+			jclass Class )
 		{
-			Env = jniq::GetEnv( Env );
+			Env_ = Env;
 
-			if ( !Env->IsInstanceOf( Object, Class ) )
+			if ( !Env_->IsInstanceOf( Object, Class ) )
 				qRFwk();
 
-			Object_ = Init_( Object, Env );
+			Object_ = Init_( Object );
 		}
 		void Init(
+			JNIEnv *Env,
 			jobject Object,
-			const char *Class,
-			JNIEnv *Env = NULL )
+			const char *Class )
 		{
-			Env = jniq::GetEnv( Env );
-
-			return Init( Object, jniq::FindClass( Class, Env ), Env );
+			return Init( Env, Object, jniq::FindClass( Env, Class ) );
 		}
 		operator jobject( void )
 		{
 			return O_();
 		}
 		template <typename ...args> void Init(
-			jclass Class,
-			const char *Signature,
 			JNIEnv *Env,
-			args... Args )
-		{
-			Env = jniq::GetEnv( Env );
-
-			return Init( Env->NewObject( Class, jniq::GetMethodID( Class, "<init>", Signature, Env ), Args... ), Class, Env );
-		}
-		template <typename ...args> void Init(
 			jclass Class,
 			const char *Signature,
 			args... Args )
 		{
-			return Init( Class, Signature, NULL, Args... );
+			return Init( Env, Env->NewObject( Class, jniq::GetMethodID( Env, Class, "<init>", Signature ), Args... ), Class );
 		}
 		template <typename ...args> void Init(
+			JNIEnv *Env,
 			const char *ClassName,
 			const char *Signature,
-			JNIEnv *Env,
 			args... Args )
 		{
-			Env = jniq::GetEnv( Env );
-
-			return Init( jniq::FindClass( ClassName, Env ), Signature, Env, Args... );
+			return Init( Env, jniq::FindClass( Env, ClassName ), Signature, Env, Args... );
 		}
 		template <typename ...args> void Init(
 			const char *ClassName,
@@ -125,12 +112,9 @@ namespace jrebse {
 		template <typename ...args> type Call##name##Method(\
 			const char *Method,\
 			const char *Signature,\
-			JNIEnv *Env,\
 			args... Args ) const\
 		{\
-			Env = jniq::GetEnv( Env );\
-\
-			return Env->Call##name##Method( O_(), jniq::GetMethodID( O_(), Method, Signature, Env ), Args... );\
+			return Env_->Call##name##Method( Env_, O_(), jniq::GetMethodID( Env_, O_(), Method, Signature ), Args... );\
 		}
 		H( void, Void );
 		H( jint, Int );
@@ -146,14 +130,12 @@ namespace jrebse {
 		virtual void reset_( bso::sBool P ) override
 		{
 			if ( P ) { 
-				jniq::GetEnv( NULL )->DeleteGlobalRef( Object_ );
+				Env_->DeleteGlobalRef( Object_ );
 			}
 		}
-		virtual jobject Init_(
-			jobject Object,
-			JNIEnv_ *Env ) override
+		virtual jobject Init_( jobject Object ) override
 		{
-			return jniq::GetEnv( Env )->NewGlobalRef( Object );
+			return Env_->NewGlobalRef( Object );
 		}
 	};
 
@@ -208,36 +190,34 @@ namespace jrebse {
 		namespace io {
 			CH( PrintStream )
 				void Println(
-					jobject Object,
-					JNIEnv *Env = NULL ) const
+					JNIEnv *Env,
+					jobject Object ) const
 				{
-					return object::CallVoidMethod( "println", "(Ljava/lang/Object;)V", Env, Object );
+					return object::CallVoidMethod( Env, "println", "(Ljava/lang/Object;)V", Object );
 				}
 				void Println(
-					const char *Text,
-					JNIEnv *Env = NULL ) const
+					JNIEnv *Env,
+					const char *Text ) const
 				{
-					Env = jniq::GetEnv( Env );
-
-					return Println( Env->NewStringUTF( Text ), Env );
+					return Println( Env, Env->NewStringUTF( Text ) );
 				}
-				void Flush( JNIEnv *Env = NULL ) const
+				void Flush( JNIEnv *Env ) const
 				{
-					return object::CallVoidMethod( "flush", "()V", Env );
+					return object::CallVoidMethod( Env, "flush", "()V" );
 				}
 			CF( PrintStream );
 			CH( InputStream )
-				jint Read( JNIEnv *Env = NULL ) const
+				jint Read( JNIEnv *Env ) const
 				{
-					return object::CallIntMethod( "read", "()I", Env );
+					return object::CallIntMethod( Env, "read", "()I" );
 				}
 				jint Read(
+					JNIEnv *Env,
 					jbyteArray b,
 					jint off,
-					jint len,
-					JNIEnv *Env = NULL ) const
+					jint len ) const
 				{
-					return object::CallIntMethod( "read", "([BII)I", Env, b, off, len, Env );
+					return object::CallIntMethod( Env, "read", "([BII)I", Env, b, off, len );
 				}
 			CF( InputStream );
 		}
@@ -290,11 +270,9 @@ namespace jrebse {
 				}
 			CF( String );
 			CH( System )
-				static io::sPrintStream Out( JNIEnv *Env = NULL )
+				static io::sPrintStream Out( JNIEnv *Env )
 				{
-					Env = jniq::GetEnv( Env );
-
-					return io::sPrintStream( jniq::GetStaticObjectField( Name, "out", "Ljava/io/PrintStream;", Env ), Env );
+					return io::sPrintStream( Env, jniq::GetStaticObjectField( Env, Name, "out", "Ljava/io/PrintStream;" ) );
 				}
 			CF( System );
 		}
